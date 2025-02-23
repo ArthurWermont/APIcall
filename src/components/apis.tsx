@@ -171,6 +171,7 @@ const Apis = () => {
                     color:'#87CEFA',
                     border:'none',
                     borderRadius: '5px',
+                    cursor:'pointer'  
                 }}
 
                 onClick={RedirecionarParaSite}>
