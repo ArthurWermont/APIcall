@@ -8,7 +8,7 @@ async function fetchConselho() {
         //console.log(data)
         return data.slip.advice;
     } catch (error) {
-        console.error(error);
+        //console.error(error);
         throw error;
     }
 }
@@ -25,7 +25,6 @@ async function fetchCachorro(numero: number) {
         // Cria uma URL temporária para a imagem
         const imageUrl = URL.createObjectURL(imageBlob);
 
-        console.log(imageUrl);  // Exibe a URL da imagem no console
 
         return imageUrl;  // Retorna a URL da imagem para uso posterior
     } catch (error) {
@@ -38,43 +37,59 @@ async function fetchCachorro(numero: number) {
 const Apis = () => {
 
     const [guardarConselho, setGuardarConselho] = useState('');
-    const [guardarCachorros, setGuardarCachorros] = useState('');
+    const [guardarCachorros, setGuardarCachorros] = useState([]);
     const [numeroAleatorio, setNumeroAleatorio] = useState('');
     const [erro, setErro] = useState('');
 
-    const RedirecionarParaSite =()=>{
-         // Abre o site em uma nova aba
-         window.open('https://http.dog/', '_blank'); // _blank abre em uma nova aba
+    const clearImages = () => {
+        setGuardarCachorros([]);
+        setErro('');
+    }
+
+    const RedirecionarParaSite = () => {
+        // Abre o site em uma nova aba
+        window.open('https://http.dog/', '_blank'); // _blank abre em uma nova aba
 
 
     };
 
-    let imagemDiv = null;
-    if (guardarCachorros) {
-        imagemDiv = (
-            <div style={{ textAlign: 'center', color: '#87CEFA' }}>
-                <h3>Dog image:</h3>
-                <img src={guardarCachorros} alt="Cachorro" style={{
-                    width: '500px',  // Ajusta a largura da imagem
+    const imagemDiv = guardarCachorros.map((data) => (
+        <div style={{ textAlign: 'center', color: 'white', fontSize: '15px', fontWeight: 'bold' }}>
+            <h3>Dog image:</h3>
+            <div style={{}}>
+                {/* verificar isso depois */}
+                <img src={data.urlImage} alt="Cachorro" style={{
+                    width: '150px',  // Ajusta a largura da imagem
                     height: 'auto'   // Mantém a proporção da imagem
                 }} />
             </div>
-        );
+        </div>
+    ));
+
+
+    const newNumberErro = (numVerification) => {
+        const ExistNumber = guardarCachorros.some(item => item.numeroErro === numVerification)
+        return ExistNumber;
     }
-
-
     const PressTheButtonAPI2 = async () => {
-        const numero = Number(numeroAleatorio)
+        const numeroAlet = Number(numeroAleatorio)
         setErro('');
-        try {
-            const cachorro = await fetchCachorro(numero);
-            setGuardarCachorros(cachorro);
-        } catch (error) {
-            setErro('Número não encontrado para a imagem ou erro na requisição.');
-            setGuardarCachorros('');
-
+        if (newNumberErro(numeroAlet) === true) {
+            setErro('Digite um numero diferente')
+            return
+        } else {
+            try {
+                const cachorro = await fetchCachorro(numeroAlet);
+                const newErrorData = {
+                    urlImage: cachorro,
+                    numeroErro: numeroAlet
+                }
+                setGuardarCachorros((prevErrorData) => [...prevErrorData, newErrorData])
+            } catch (error) {
+                setErro('Número não encontrado para a imagem ou erro na requisição.');
+                return;
+            }
         }
-
     }
 
     // useEffect(() => {
@@ -117,7 +132,9 @@ const Apis = () => {
                         borderRadius: '5px',
                         cursor: 'pointer',
                         marginBottom: '20px', // Espaço entre os botões
-                        marginTop: '50px'
+                        marginTop: '50px',
+                        fontWeight: 'bold'  // Aplica negrito ao texto
+
                     }}
                 >
                     API advice
@@ -139,6 +156,8 @@ const Apis = () => {
                         borderRadius: '5px',
                         cursor: 'pointer',
                         marginBottom: '10px', // Espaço entre o botão e a caixa de input
+                        fontWeight: 'bold'  // Aplica negrito ao texto
+
                     }}
                 >
                     API dogs
@@ -161,22 +180,34 @@ const Apis = () => {
                 />
             </div>
             <div style={{
-                display:'flex',
+                display: 'flex',
                 alignItems: 'center',
                 alignContent: 'center',
                 justifyContent: 'center',
             }}>
-                <button style = {{
-                   backgroundColor: '#2F4F4F',
-                    color:'#87CEFA',
-                    border:'none',
+                <button style={{
+                    backgroundColor: '#2F4F4F',
+                    color: '#87CEFA',
+                    border: 'none',
                     borderRadius: '5px',
-                    cursor:'pointer'  
+                    cursor: 'pointer',
+                    marginRight: '10px',
+                    fontWeight: 'bold'  // Aplica negrito ao texto
+
                 }}
 
-                onClick={RedirecionarParaSite}>
-               Check numbers 
+                    onClick={RedirecionarParaSite}>
+                    Check numbers
                 </button>
+
+                <button style={{
+                    cursor: 'pointer', backgroundColor: 'gray',
+                    color: 'red',
+                    border: 'none',
+                    borderRadius: '5px',
+                    fontWeight: 'bold'  // Aplica negrito ao texto
+
+                }} onClick={clearImages}>Clear</button>
             </div>
 
             {/* Exibe o conselho */}
@@ -193,7 +224,21 @@ const Apis = () => {
                 </div>
             </div>
             {erro && <div style={{ color: 'red', textAlign: 'center' }}>{erro}</div>} {/* Exibe a mensagem de erro */}
-            {imagemDiv}
+
+            {/* fazer na vertical */}
+            <div style={{
+
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',  // Alinha os itens no início
+                alignItems: 'center',      // Alinha os itens no topo
+                gap: '10px',                   // Espaçamento entre os itens
+                padding: '20px'                // Adiciona um padding ao redor para garantir que os itens não fiquem colados nas bordas
+
+            }}>
+                {imagemDiv}
+            </div>
+
         </div >
 
     );
