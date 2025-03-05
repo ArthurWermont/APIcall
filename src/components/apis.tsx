@@ -106,8 +106,10 @@ const Apis = () => {
         <div style={{
             width: '100vw',
             height: '100vh',
-            // position: 'absolute',
-            backgroundColor: '#333333'  /* Só para visualização */
+            //position: 'absolute',
+            backgroundColor: '#333333',  /* Só para visualização */
+            overflow: 'auto',  // Permite rolagem dentro do container 
+            //position: 'fixed',  // Isso mantém o layout fixo na tela
         }}>
             <div
                 style={{
